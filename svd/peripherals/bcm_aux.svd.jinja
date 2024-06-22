@@ -297,6 +297,13 @@
                             <description>CTS assert level</description>
                             <bitOffset>7</bitOffset>
                             <bitWidth>1</bitWidth>
+                            <enumeratedValues derivedFrom="UART1.CNTL.RTS_ASSERT.ASSERT_LEVEL"></enumeratedValues>
+                        </field>
+                        <field>
+                            <name>RTS_ASSERT</name>
+                            <description>RTS assert level</description>
+                            <bitOffset>6</bitOffset>
+                            <bitWidth>1</bitWidth>
                             <enumeratedValues>
                                 <name>ASSERT_LEVEL</name>
                                 <enumeratedValue>
@@ -310,13 +317,6 @@
                                     <value>1</value>
                                 </enumeratedValue>
                             </enumeratedValues>
-                        </field>
-                        <field>
-                            <name>RTS_ASSERT</name>
-                            <description>RTS assert level</description>
-                            <bitOffset>6</bitOffset>
-                            <bitWidth>1</bitWidth>
-                            <enumeratedValues derivedFrom="UART1.CNTL.CTS_ASSERT.ASSERT_LEVEL"></enumeratedValues>
                         </field>
                         <field>
                             <name>RTS_FIFO_LEVEL</name>
