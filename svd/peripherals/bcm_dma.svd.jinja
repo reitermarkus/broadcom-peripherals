@@ -136,6 +136,12 @@
             <bitOffset>0</bitOffset>
             <bitWidth>32</bitWidth>
             <access>read-write</access>
+            <writeConstraint>
+              <range>
+                <minimum>0</minimum>
+                <maximum>0xffffffff</maximum>
+              </range>
+            </writeConstraint>
           </field>
         </fields>
       </register>
@@ -194,6 +200,64 @@
         <size>32</size>
         <access>read-write</access>
         <resetValue>0x00000000</resetValue>
+        <fields>
+          <field>
+            <name>LITE</name>
+            <description>DMA Lite</description>
+            <bitOffset>28</bitOffset>
+            <bitWidth>1</bitWidth>
+            <access>read-only</access>
+          </field>
+          <field>
+            <name>VERSION</name>
+            <description>DMA Version</description>
+            <bitOffset>25</bitOffset>
+            <bitWidth>3</bitWidth>
+            <access>read-only</access>
+          </field>
+          <field>
+            <name>DMA_STATE</name>
+            <description>DMA State Machine State</description>
+            <bitOffset>16</bitOffset>
+            <bitWidth>9</bitWidth>
+            <access>read-only</access>
+          </field>
+          <field>
+            <name>DMA_ID</name>
+            <description>DMA ID</description>
+            <bitOffset>8</bitOffset>
+            <bitWidth>8</bitWidth>
+            <access>read-only</access>
+          </field>
+          <field>
+            <name>OUTSTANDING_WRITES</name>
+            <description>DMA Outstanding Writes Counter</description>
+            <bitOffset>4</bitOffset>
+            <bitWidth>4</bitWidth>
+            <access>read-only</access>
+          </field>
+          <field>
+            <name>READ_ERROR</name>
+            <description>Slave Read Response Error</description>
+            <bitOffset>2</bitOffset>
+            <bitWidth>1</bitWidth>
+            <access>read-write</access>
+          </field>
+          <field>
+            <name>FIFO_ERROR</name>
+            <description>Fifo Error</description>
+            <bitOffset>1</bitOffset>
+            <bitWidth>1</bitWidth>
+            <access>read-write</access>
+          </field>
+          <field>
+            <name>READ_LAST_NOT_SET_ERROR</name>
+            <description>Read Last Not Set Error</description>
+            <bitOffset>0</bitOffset>
+            <bitWidth>1</bitWidth>
+            <access>read-write</access>
+          </field>
+        </fields>
       </register>
       {%- endfor %}
       <register>
