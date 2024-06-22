@@ -44,6 +44,9 @@
         {%- import "peripherals/bcm_serial_controller.svd.jinja" as bcm_serial_controller %}
         {{ bcm_serial_controller.peripheral("BSC0", peripheral_base + 0x205000, direct_irq=True)}}
 
+        {%- import "peripherals/bcm_dma.svd.jinja" as bcm_dma %}
+        {{ bcm_dma.peripheral("DMA", peripheral_base + 0x007000) }}
+
         {%- import "peripherals/bcm_pwm.svd.jinja" as bcm_pwm %}
         {{ bcm_pwm.peripheral("PWM0", peripheral_base + 0x20C000)}}
 

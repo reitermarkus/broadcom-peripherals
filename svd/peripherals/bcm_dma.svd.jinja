@@ -1,0 +1,319 @@
+{% macro peripheral(name, base_address, enable_page=False) -%}
+  {%- set channel_register_size = 0x100 -%}
+  {%- set enable_register_offset = 0xff0 -%}
+  {%- set enable_register_size = 32 %}
+  <peripheral>
+    <name>{{ name }}</name>
+    <description>DMA Controller</description>
+    <baseAddress>{{ "0x{:x}".format(base_address) }}</baseAddress>
+    <addressBlock>
+      <offset>0x0</offset>
+      <size>{{ enable_register_offset + enable_register_size // 8 }}</size>
+      <usage>registers</usage>
+    </addressBlock>
+    <registers>
+      {%- for channel in range(0, 15) -%}
+      {%- set channel_base_address = channel * channel_register_size %}
+      <register>
+        <addressOffset>{{ "0x{:x}".format(channel_base_address + 0x0) }}</addressOffset>
+        <name>{{ channel }}_CS</name>
+        <description>DMA Channel {{ channel }} Control and Status</description>
+        <size>32</size>
+        <access>read-write</access>
+        <resetValue>0x00000000</resetValue>
+        <fields>
+          <field>
+            <name>RESET</name>
+            <description>DMA Channel Reset</description>
+            <bitOffset>31</bitOffset>
+            <bitWidth>1</bitWidth>
+            <access>write-only</access>
+          </field>
+          <field>
+            <name>ABORT</name>
+            <description>Abort DMA</description>
+            <bitOffset>30</bitOffset>
+            <bitWidth>1</bitWidth>
+            <access>write-only</access>
+          </field>
+          <field>
+            <name>DISDEBUG</name>
+            <description>Disable debug pause signal</description>
+            <bitOffset>29</bitOffset>
+            <bitWidth>1</bitWidth>
+            <access>read-write</access>
+          </field>
+          <field>
+            <name>WAIT_FOR_OUTSTANDING_WRITES</name>
+            <description>Wait for outstanding writes</description>
+            <bitOffset>28</bitOffset>
+            <bitWidth>1</bitWidth>
+            <access>read-write</access>
+          </field>
+          <field>
+            <name>PANIC_PRIORITY</name>
+            <description>AXI Panic Priority Level</description>
+            <bitOffset>24</bitOffset>
+            <bitWidth>4</bitWidth>
+            <access>read-write</access>
+          </field>
+          <field>
+            <name>PRIORITY</name>
+            <description>AXI Priority Level</description>
+            <bitOffset>16</bitOffset>
+            <bitWidth>4</bitWidth>
+            <access>read-write</access>
+          </field>
+          <field>
+            <name>ERROR</name>
+            <description>DMA Error</description>
+            <bitOffset>8</bitOffset>
+            <bitWidth>1</bitWidth>
+            <access>read-only</access>
+          </field>
+          <field>
+            <name>WAITING_FOR_OUTSTANDING_WRITES</name>
+            <description>DMA is Waiting for the Last Write to be Received</description>
+            <bitOffset>6</bitOffset>
+            <bitWidth>1</bitWidth>
+            <access>read-only</access>
+          </field>
+          <field>
+            <name>DREQ_STOPS_DMA</name>
+            <description>DMA Paused by DREQ State</description>
+            <bitOffset>5</bitOffset>
+            <bitWidth>1</bitWidth>
+            <access>read-only</access>
+          </field>
+          <field>
+            <name>PAUSED</name>
+            <description>DMA Paused State</description>
+            <bitOffset>4</bitOffset>
+            <bitWidth>1</bitWidth>
+            <access>read-only</access>
+          </field>
+          <field>
+            <name>DREQ</name>
+            <description>DREQ State</description>
+            <bitOffset>3</bitOffset>
+            <bitWidth>1</bitWidth>
+            <access>read-only</access>
+          </field>
+          <field>
+            <name>INT</name>
+            <description>Interrupt Status</description>
+            <bitOffset>2</bitOffset>
+            <bitWidth>1</bitWidth>
+            <access>read-write</access>
+          </field>
+          <field>
+            <name>END</name>
+            <description>DMA End Flag</description>
+            <bitOffset>1</bitOffset>
+            <bitWidth>1</bitWidth>
+            <access>read-write</access>
+          </field>
+          <field>
+            <name>ACTIVE</name>
+            <description>Activate the DMA</description>
+            <bitOffset>0</bitOffset>
+            <bitWidth>1</bitWidth>
+            <access>read-write</access>
+          </field>
+        </fields>
+      </register>
+      <register>
+        <addressOffset>{{ "0x{:x}".format(channel_base_address + 0x4) }}</addressOffset>
+        <name>{{ channel }}_CONBLK_AD</name>
+        <description>DMA Channel {{ channel }} Control Block Address</description>
+        <size>32</size>
+        <access>read-write</access>
+        <resetValue>0x00000000</resetValue>
+        <fields>
+          <field>
+            <name>SCB_ADDR</name>
+            <description>Control Block Address</description>
+            <bitOffset>0</bitOffset>
+            <bitWidth>32</bitWidth>
+            <access>read-write</access>
+            <writeConstraint>
+              <range>
+                <minimum>0</minimum>
+                <maximum>0xffffffff</maximum>
+              </range>
+            </writeConstraint>
+          </field>
+        </fields>
+      </register>
+      <register>
+        <addressOffset>{{ "0x{:x}".format(channel_base_address + 0x8) }}</addressOffset>
+        <name>{{ channel }}_TI</name>
+        <description>DMA Channel {{ channel }} CB Word 0 (Transfer Information)</description>
+        <size>32</size>
+        <access>read-write</access>
+        <resetValue>0x00000000</resetValue>
+      </register>
+      <register>
+        <addressOffset>{{ "0x{:x}".format(channel_base_address + 0xc) }}</addressOffset>
+        <name>{{ channel }}_SOURCE_AD</name>
+        <description>DMA Channel {{ channel }} CB Word 1 (Source Address)</description>
+        <size>32</size>
+        <access>read-write</access>
+        <resetValue>0x00000000</resetValue>
+      </register>
+      <register>
+        <addressOffset>{{ "0x{:x}".format(channel_base_address + 0x10) }}</addressOffset>
+        <name>{{ channel }}_DEST_AD</name>
+        <description>DMA Channel {{ channel }} CB Word 2 (Destination Address)</description>
+        <size>32</size>
+        <access>read-write</access>
+        <resetValue>0x00000000</resetValue>
+      </register>
+      <register>
+        <addressOffset>{{ "0x{:x}".format(channel_base_address + 0x14) }}</addressOffset>
+        <name>{{ channel }}_TXFR_LEN</name>
+        <description>DMA Channel {{ channel }} CB Word 3 (Transfer Length)</description>
+        <size>32</size>
+        <access>read-write</access>
+        <resetValue>0x00000000</resetValue>
+      </register>
+      <register>
+        <addressOffset>{{ "0x{:x}".format(channel_base_address + 0x18) }}</addressOffset>
+        <name>{{ channel }}_STRIDE</name>
+        <description>DMA Channel {{ channel }} CB Word 4 (2D Stride)</description>
+        <size>32</size>
+        <access>read-write</access>
+        <resetValue>0x00000000</resetValue>
+      </register>
+      <register>
+        <addressOffset>{{ "0x{:x}".format(channel_base_address + 0x1c) }}</addressOffset>
+        <name>{{ channel }}_NEXTCONBK</name>
+        <description>DMA Channel {{ channel }} CB Word 5 (Next CB Address)</description>
+        <size>32</size>
+        <access>read-write</access>
+        <resetValue>0x00000000</resetValue>
+      </register>
+      <register>
+        <addressOffset>{{ "0x{:x}".format(channel_base_address + 0x20) }}</addressOffset>
+        <name>{{ channel }}_DEBUG</name>
+        <description>DMA Channel {{ channel }} Debug</description>
+        <size>32</size>
+        <access>read-write</access>
+        <resetValue>0x00000000</resetValue>
+        <fields>
+          <field>
+            <name>LITE</name>
+            <description>DMA Lite</description>
+            <bitOffset>28</bitOffset>
+            <bitWidth>1</bitWidth>
+            <access>read-only</access>
+          </field>
+          <field>
+            <name>VERSION</name>
+            <description>DMA Version</description>
+            <bitOffset>25</bitOffset>
+            <bitWidth>3</bitWidth>
+            <access>read-only</access>
+          </field>
+          <field>
+            <name>DMA_STATE</name>
+            <description>DMA State Machine State</description>
+            <bitOffset>16</bitOffset>
+            <bitWidth>9</bitWidth>
+            <access>read-only</access>
+          </field>
+          <field>
+            <name>DMA_ID</name>
+            <description>DMA ID</description>
+            <bitOffset>8</bitOffset>
+            <bitWidth>8</bitWidth>
+            <access>read-only</access>
+          </field>
+          <field>
+            <name>OUTSTANDING_WRITES</name>
+            <description>DMA Outstanding Writes Counter</description>
+            <bitOffset>4</bitOffset>
+            <bitWidth>4</bitWidth>
+            <access>read-only</access>
+          </field>
+          <field>
+            <name>READ_ERROR</name>
+            <description>Slave Read Response Error</description>
+            <bitOffset>2</bitOffset>
+            <bitWidth>1</bitWidth>
+            <access>read-write</access>
+          </field>
+          <field>
+            <name>FIFO_ERROR</name>
+            <description>Fifo Error</description>
+            <bitOffset>1</bitOffset>
+            <bitWidth>1</bitWidth>
+            <access>read-write</access>
+          </field>
+          <field>
+            <name>READ_LAST_NOT_SET_ERROR</name>
+            <description>Read Last Not Set Error</description>
+            <bitOffset>0</bitOffset>
+            <bitWidth>1</bitWidth>
+            <access>read-write</access>
+          </field>
+        </fields>
+      </register>
+      {%- endfor %}
+      <register>
+        <addressOffset>0xfe0</addressOffset>
+        <name>INT_STATUS</name>
+        <description>Interrupt status of each DMA channel</description>
+        <size>32</size>
+        <access>read-write</access>
+        <resetValue>0x00000000</resetValue>
+        <fields>
+          {%- for channel in range(0, 16) | reverse %}
+          <field>
+            <name>INT{{ channel }}</name>
+            <description>Interrupt status of DMA engine {{ channel }}</description>
+            <bitOffset>{{ channel }}</bitOffset>
+            <bitWidth>1</bitWidth>
+            <access>read-write</access>
+          </field>
+          {%- endfor %}
+        </fields>
+      </register>
+      <register>
+        <addressOffset>{{ "0x{:x}".format(enable_register_offset) }}</addressOffset>
+        <name>ENABLE</name>
+        <description>Global enable bits for each DMA channel</description>
+        <size>32</size>
+        <access>read-write</access>
+        <resetValue>0x00000000</resetValue>
+        <fields>
+          {%- if enable_page %}
+          <field>
+            <name>PAGELITE</name>
+            <description>Set the 1G SDRAM ram page that the DMA Lite engines (DMA7-10) will access when addressing the 1G uncached range C000_0000->ffff_ffff</description>
+            <bitOffset>28</bitOffset>
+            <bitWidth>4</bitWidth>
+            <access>read-write</access>
+          </field>
+          <field>
+            <name>PAGE</name>
+            <description>Set the 1G SDRAM ram page that the 30-bit DMA engines (DMA0-6) will access when addressing the 1G uncached range C000_0000->ffff_ffff</description>
+            <bitOffset>24</bitOffset>
+            <bitWidth>4</bitWidth>
+            <access>read-write</access>
+          </field>
+          {% endif -%}
+          {%- for channel in range(0, 15) | reverse -%}
+          <field>
+            <name>EN{{ channel }}</name>
+            <description>Enable DMA engine {{ channel }}</description>
+            <bitOffset>{{ channel }}</bitOffset>
+            <bitWidth>1</bitWidth>
+            <access>read-write</access>
+          </field>
+          {%- endfor %}
+        </fields>
+      </register>
+    </registers>
+  </peripheral>
+{% endmacro %}
